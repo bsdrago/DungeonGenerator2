@@ -5,7 +5,7 @@ using UnityEngine;
 public class Room : MonoBehaviour 
 {
     [SerializeField] private GameObject topDoor;
-    [SerializeField] private GameObject bottonDoor;
+    [SerializeField] private GameObject bottomDoor;
     [SerializeField] private GameObject leftDoor;
     [SerializeField] private GameObject rightDoor;
 
@@ -20,7 +20,7 @@ public class Room : MonoBehaviour
 
         if (direction == Vector2Int.down)
         {
-            bottonDoor.SetActive(true);
+            bottomDoor.SetActive(true);
         }
 
         if (direction == Vector2Int.left)
