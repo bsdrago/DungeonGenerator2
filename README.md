@@ -6,7 +6,7 @@ The difference in this code is essentially the change in the way of controlling 
 
 When the key exists, it is obviously not possible to place a room at that point, which in turn returns the "TryGenerateRoom" code as false (the return value is never used in this code, but is prepared for it).
     
-## Developmet
+## Development
 The objective of this code was to get rid of overlapping rooms, which I seem to have achieved successfully. I carried out several tests and was no longer able to make this "error".
 
 A side effect (although I left it in the code) is that the maximum number of rooms (maxRoom) is always reached, which made the minRoom variable obsolete, apparently, in this code.
