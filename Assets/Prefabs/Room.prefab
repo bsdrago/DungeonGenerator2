@@ -133,7 +133,7 @@ GameObject:
   - component: {fileID: 6707234655843076220}
   - component: {fileID: 2136652347704211834}
   m_Layer: 0
-  m_Name: BottonDoor
+  m_Name: BottomDoor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -220,7 +220,7 @@ GameObject:
   - component: {fileID: 7449569447543968968}
   - component: {fileID: 3452885236311352130}
   m_Layer: 0
-  m_Name: BottonWall
+  m_Name: BottomWall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -343,7 +343,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   topDoor: {fileID: 9134654054197728915}
-  bottonDoor: {fileID: 4275335471954344083}
+  bottomDoor: {fileID: 4275335471954344083}
   leftDoor: {fileID: 8759126570268840867}
   rightDoor: {fileID: 139136188015101994}
 --- !u!1 &6516999093651516546
