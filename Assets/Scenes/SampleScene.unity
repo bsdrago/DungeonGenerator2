@@ -384,11 +384,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f663a85ea9e90ea4988c81a641dec5a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomPrefab: {fileID: 6306032747365223070, guid: ab85ce99d7276524885a0c15375527bc, type: 3}
-  maxRooms: 14
-  minRooms: 12
   gridSizeX: 10
   gridSizeY: 10
+  maxRooms: 14
+  minRooms: 12
+  roomWidth: 20
+  roomHeight: 12
+  roomPrefab: {fileID: 6306032747365223070, guid: ab85ce99d7276524885a0c15375527bc, type: 3}
   roomObjects: []
 --- !u!1660057539 &9223372036854775807
 SceneRoots:

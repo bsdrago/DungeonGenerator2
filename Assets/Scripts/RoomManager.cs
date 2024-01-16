@@ -4,17 +4,21 @@ using Random = UnityEngine.Random;
 
 public class RoomManager : MonoBehaviour
 {
-    [SerializeField] private GameObject roomPrefab;
-    [SerializeField] private int maxRooms = 15;
-    [SerializeField] private int minRooms = 10;
-
-    private int _roomWidth = 20;
-    private int _roomHeight = 12;
-
+    [Header("Grid Size")]
     [SerializeField] private int gridSizeX = 10;
     [SerializeField] private int gridSizeY = 10;
 
-    [SerializeField]private List<GameObject> roomObjects = new();
+    [Header("Number of Rooms")]
+    [SerializeField] private int maxRooms = 15;
+    [SerializeField] private int minRooms = 10;
+
+    [Header("Room Size")]
+    [SerializeField] private int roomWidth = 20;
+    [SerializeField] private int roomHeight = 12;
+
+    [Header("References")]
+    [SerializeField] private GameObject roomPrefab;
+    private Dictionary<Vector2Int, GameObject> _roomObjects = new();
     private Queue<Vector2Int> _roomQueue = new();
 
     private int[,] _roomGrid;
@@ -55,7 +59,7 @@ public class RoomManager : MonoBehaviour
         }
 
 
-        //Regerar as salas
+        // Regenerate room pressing 'R'
         if (Input.GetKey(KeyCode.R))
         {
             RegenerateRooms();
@@ -72,7 +76,7 @@ public class RoomManager : MonoBehaviour
         var initialRoom = Instantiate(roomPrefab, GetPositionFromGridIndex(roomIndex), Quaternion.identity);
         initialRoom.name = $"Room-{roomIndex.ToString()}";
         initialRoom.GetComponent<Room>().RoomIndex = roomIndex;
-        roomObjects.Add(initialRoom);
+        _roomObjects.Add(roomIndex, initialRoom);
     }
 
     private bool TryGenerateRoom(Vector2Int roomIndex)
@@ -80,10 +84,16 @@ public class RoomManager : MonoBehaviour
         int x = roomIndex.x;
         int y = roomIndex.y;
 
+        // If Already has a room in that place - fail
+        if (_roomObjects.ContainsKey(roomIndex))
+        {
+            return false;
+        }
+        
         if (_roomCount >= maxRooms) return false;
         if (Random.value < 0.5f && roomIndex != Vector2Int.zero) return false;
-        // Evita deixar salas muito juntas, é possivel calibrar isso no numero magico 1 abaixo
-        
+
+        // Avoid to make rooms too close
         if (CountAdjacentRooms(roomIndex) > 1) return false;
 
         _roomQueue.Enqueue(roomIndex);
@@ -93,18 +103,23 @@ public class RoomManager : MonoBehaviour
         var newRoom = Instantiate(roomPrefab, GetPositionFromGridIndex(roomIndex), Quaternion.identity);
         newRoom.name = $"Room-{roomIndex.ToString()}";
         newRoom.GetComponent<Room>().RoomIndex = roomIndex;
-        roomObjects.Add(newRoom);
+        _roomObjects.Add(roomIndex, newRoom);
 
         OpenDoors(newRoom, x, y);
 
         return true;
     }
 
-    // Zera todas as salas e tenta de novo!
+    // Try to generate all rooms again
     private void RegenerateRooms()
     {
-        roomObjects.ForEach(Destroy);
-        roomObjects.Clear();
+        // Erase all data in dictionary
+        foreach (KeyValuePair<Vector2Int, GameObject> kvp in _roomObjects)
+        {
+            Destroy(kvp.Value);
+        }
+
+        _roomObjects.Clear();
         _roomGrid = new int[gridSizeX, gridSizeY];
         _roomQueue.Clear();
         _roomCount = 0;
@@ -119,41 +134,44 @@ public class RoomManager : MonoBehaviour
         Room newRoomScript = room.GetComponent<Room>();
 
         //pega vizinhos
-        Room leftRoomScript = GetRoomScriptAt(new Vector2(x - 1, y));
-        Room rightRoomScript = GetRoomScriptAt(new Vector2(x + 1, y));
-        Room topRoomScript = GetRoomScriptAt(new Vector2(x, y + 1));
-        Room bottonRoomScript = GetRoomScriptAt(new Vector2(x, y - 1));
+        Room leftRoomScript = GetRoomScriptAt(new Vector2Int(x - 1, y));
+        Room rightRoomScript = GetRoomScriptAt(new Vector2Int(x + 1, y));
+        Room topRoomScript = GetRoomScriptAt(new Vector2Int(x, y + 1));
+        Room bottonRoomScript = GetRoomScriptAt(new Vector2Int(x, y - 1));
 
-        // Determina quais portas estao abertas baseado na direcao da sala
+        // Determines which doors are open based on the direction of the room
         if (x > 0 && _roomGrid[x - 1, y] != 0)
         {
-            // Sala vizinha a esquerda
+            // Neighboring room on the left
             newRoomScript.OpenDoor(Vector2Int.left);
             leftRoomScript.OpenDoor(Vector2Int.right);
         }
 
         if (x < gridSizeX - 1 && _roomGrid[x + 1, y] != 0)
         {
+            // Neighboring room on the right
             newRoomScript.OpenDoor(Vector2Int.right);
             rightRoomScript.OpenDoor(Vector2Int.left);
         }
 
         if (y > 0 && _roomGrid[x, y - 1] != 0)
         {
+            // Neighboring room on the down
             newRoomScript.OpenDoor(Vector2Int.down);
             bottonRoomScript.OpenDoor(Vector2Int.up);
         }
 
         if (y < gridSizeY - 1 && _roomGrid[x, y + 1] != 0)
         {
+            // Neighboring room on the top
             newRoomScript.OpenDoor(Vector2Int.up);
             topRoomScript.OpenDoor(Vector2Int.down);
         }
     }
 
-    private Room GetRoomScriptAt(Vector2 index)
+    private Room GetRoomScriptAt(Vector2Int index)
     {
-        GameObject roomObject = roomObjects.Find(r => r.GetComponent<Room>().RoomIndex == index);
+        _roomObjects.TryGetValue(index, out GameObject roomObject);
         if (roomObject != null) return roomObject.GetComponent<Room>();
         return null;
     }
@@ -176,8 +194,8 @@ public class RoomManager : MonoBehaviour
     {
         int gridX = gridIndex.x;
         int gridY = gridIndex.y;
-        return new Vector3(_roomWidth * (gridX - gridSizeX / 2),
-            _roomHeight * (gridY - gridSizeY / 2)
+        return new Vector3(roomWidth * (gridX - gridSizeX / 2),
+            roomHeight * (gridY - gridSizeY / 2)
         );
     }
 
@@ -191,7 +209,7 @@ public class RoomManager : MonoBehaviour
             for (int y = 0; y < gridSizeY; y++)
             {
                 Vector3 position = GetPositionFromGridIndex(new Vector2Int(x, y));
-                Gizmos.DrawWireCube(position, new Vector3(_roomWidth, _roomHeight, 1));
+                Gizmos.DrawWireCube(position, new Vector3(roomWidth, roomHeight, 1));
             }
         }
     }
