@@ -1,5 +1,5 @@
 # DungeonGenerator
-This code is a variation of the code developed by Rootbin Studio (https://www.youtube.com/@rootbindev) in the video "Unity Tutorial: ROGUELIKE Room / Dungeon Generation (Like the Binding of Isaac)" (https://www .youtube.com/watch?v=eK2SlZxNjiU)
+This code is a variation of the code developed by Rootbin Studio (https://www.youtube.com/@rootbindev) in the video "Unity Tutorial: ROGUELIKE Room / Dungeon Generation (Like the Binding of Isaac)" (https://www.youtube.com/watch?v=eK2SlZxNjiU)
 
 ## What's the difference?
 The difference in this code is essentially the change in the way of controlling where rooms are placed. I preferred to use a dictionary approach, where the primary key is a vector2Int.
